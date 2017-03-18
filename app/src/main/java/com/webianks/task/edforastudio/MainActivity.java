@@ -1,11 +1,15 @@
 package com.webianks.task.edforastudio;
 
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -14,19 +18,39 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SongsAdapter.ClickListener {
 
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
+    private MediaPlayer mMediaPlayer;
+    private SlidingUpPanelLayout slidingUpPanelLayout;
+
+    //bottom_bar ui elements
+
+    private ImageView bottomThumbnail;
+    private TextView songTitle;
+    private TextView bottomArtists;
+    private ImageView playPause;
+
+    //all bottom values
+    private String title;
+    private String artists;
+    private String url;
+    private String thumbnail;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +64,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
+
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(llm);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        slidingUpPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        slidingUpPanelLayout.setEnabled(true);
+
+        mMediaPlayer = new MediaPlayer();
+        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                togglePlayPause();
+            }
+        });
+
+        bottomThumbnail = (ImageView) findViewById(R.id.thumbnail);
+        songTitle = (TextView) findViewById(R.id.song_title);
+        bottomArtists = (TextView) findViewById(R.id.artists);
+        playPause = (ImageView) findViewById(R.id.play_pause);
+
+
     }
 
     private void getListFromTheNetwork() {
@@ -105,7 +148,67 @@ public class MainActivity extends AppCompatActivity {
 
     private void setSongsList(List<SongsModel> songsModelList) {
         SongsAdapter songsAdapter = new SongsAdapter(this, songsModelList);
+        songsAdapter.setClickListener(this);
         recyclerView.setAdapter(songsAdapter);
         progressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void itemClicked(String title, String artists, String url, String thumbnail) {
+
+
+        this.title = title;
+        this.artists = artists;
+        this.thumbnail = thumbnail;
+        this.url = url;
+
+        if (mMediaPlayer.isPlaying()) {
+            mMediaPlayer.stop();
+            mMediaPlayer.reset();
+        }
+
+        try {
+            mMediaPlayer.setDataSource(url);
+            mMediaPlayer.prepareAsync();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void togglePlayPause() {
+
+        if (mMediaPlayer.isPlaying()) {
+
+            mMediaPlayer.pause();
+            playPause.setImageResource(R.drawable.ic_play_circle_filled);
+
+        } else {
+
+            mMediaPlayer.start();
+            playPause.setImageResource(R.drawable.ic_pause_circle_filled);
+
+            songTitle.setText(title);
+            bottomArtists.setText(artists);
+
+            Glide.with(this)
+                    .load(thumbnail)
+                    .centerCrop()
+                    .into(bottomThumbnail);
+
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (mMediaPlayer != null) {
+            if (mMediaPlayer.isPlaying()) {
+                mMediaPlayer.stop();
+            }
+            mMediaPlayer.release();
+            mMediaPlayer = null;
+        }
     }
 }

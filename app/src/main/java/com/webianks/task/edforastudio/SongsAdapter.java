@@ -2,7 +2,6 @@ package com.webianks.task.edforastudio;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +21,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.VH> {
     private Context context;
     private List<SongsModel> songsModelList;
     private String TAG = SongsAdapter.class.getSimpleName();
+    private ClickListener clickListener;
 
     public SongsAdapter(Context context, List<SongsModel> songsModelList) {
         this.context = context;
@@ -46,7 +46,6 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.VH> {
                 .load(songsModelList.get(position).getCover_image())
                 .centerCrop()
                 .into(holder.thumbnail);
-
     }
 
     @Override
@@ -54,7 +53,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.VH> {
         return (songsModelList == null) ? 0 : songsModelList.size();
     }
 
-    public class VH extends RecyclerView.ViewHolder {
+    public class VH extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         ImageView thumbnail;
         TextView song;
@@ -67,8 +66,29 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.VH> {
             thumbnail = (ImageView) itemView.findViewById(R.id.thumbnail);
             song = (TextView) itemView.findViewById(R.id.song_title);
             artists = (TextView) itemView.findViewById(R.id.artists);
+            itemView.setOnClickListener(this);
 
         }
 
+        @Override
+        public void onClick(View view) {
+            if (clickListener != null) {
+
+                String title = songsModelList.get(getAdapterPosition()).getSong();
+                String artists = songsModelList.get(getAdapterPosition()).getArtists();
+                String url = songsModelList.get(getAdapterPosition()).getUrl();
+                String thumbnail = songsModelList.get(getAdapterPosition()).getCover_image();
+
+                clickListener.itemClicked(title, artists, url,thumbnail);
+            }
+        }
+    }
+
+    public void setClickListener(ClickListener clickListener) {
+        this.clickListener = clickListener;
+    }
+
+    public interface ClickListener {
+        void itemClicked(String title, String artists, String url,String thumbnail);
     }
 }
