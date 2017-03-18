@@ -122,16 +122,14 @@
             android:layout_below="@id/titleContainer"
             android:background="@color/cardview_dark_background" />
 
-        <ProgressBar
+        <SeekBar
             android:id="@+id/main_progress"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
             android:layout_width="match_parent"
-            android:layout_height="5dp"
+            android:layout_height="wrap_content"
             android:layout_below="@id/main_cover"
             android:layout_marginLeft="@dimen/margin_card"
             android:layout_marginRight="@dimen/margin_card"
             android:layout_marginTop="@dimen/margin_card"
-            android:indeterminate="false"
             android:max="100"
             android:progress="1" />
 
@@ -159,6 +157,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin_card"
+                android:tag="play"
                 android:src="@drawable/ic_play_circle_filled_large" />
 
             <ImageView

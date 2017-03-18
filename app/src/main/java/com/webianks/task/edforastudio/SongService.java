@@ -9,6 +9,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.io.IOException;
@@ -42,6 +43,9 @@ public class SongService extends Service implements MediaPlayer.OnCompletionList
 
         //Listen for new Audio to play -- BroadcastReceiver
         register_playNewAudio();
+        register_pauseResumeAudio();
+        register_stopAudio();
+
     }
 
     //The system calls this method when an activity, requests the service be started
@@ -235,6 +239,8 @@ public class SongService extends Service implements MediaPlayer.OnCompletionList
         }
         removeAudioFocus();
         unregisterReceiver(playNewAudio);
+        unregisterReceiver(pauseResumeAudio);
+        unregisterReceiver(stopAudio);
     }
 
     private BroadcastReceiver playNewAudio = new BroadcastReceiver() {
@@ -252,11 +258,50 @@ public class SongService extends Service implements MediaPlayer.OnCompletionList
         }
     };
 
+
+    private BroadcastReceiver stopAudio = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            stopMedia();
+        }
+    };
+
+    private BroadcastReceiver pauseResumeAudio = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (mediaPlayer != null && mediaPlayer.isPlaying())
+                pauseMedia();
+            else if (mediaPlayer != null && !mediaPlayer.isPlaying())
+                resumeMedia();
+        }
+    };
+
+
     private void register_playNewAudio() {
         //Register playNewMedia receiver
         IntentFilter filter = new IntentFilter(MainActivity.Broadcast_PLAY_NEW_AUDIO);
         registerReceiver(playNewAudio, filter);
     }
 
+    private void register_pauseResumeAudio() {
 
+        //Register playNewMedia receiver
+        IntentFilter filter = new IntentFilter(MainActivity.Broadcast_PAUSE_RESUME_AUDIO);
+        registerReceiver(pauseResumeAudio, filter);
+
+    }
+
+    private void register_stopAudio() {
+        //Register playNewMedia receiver
+        IntentFilter filter = new IntentFilter(MainActivity.Broadcast_STOP_AUDIO);
+        registerReceiver(stopAudio, filter);
+    }
+
+
+    public static void publishResult(Context context, int percentage){
+        Intent intent = new Intent("Broadcast");
+        intent.putExtra("INTENT_TYPE", "SEEKBAR_RESULT");
+        intent.putExtra("PERCENTAGE", 10);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    }
 }

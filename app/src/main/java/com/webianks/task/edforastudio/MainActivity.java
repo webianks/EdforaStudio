@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements SongsAdapter.ClickListener {
+public class MainActivity extends AppCompatActivity implements SongsAdapter.ClickListener, View.OnClickListener {
 
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
@@ -53,11 +53,14 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
     private TextView mainSongTitle;
     private TextView mainArtists;
     private ImageView mainPlayPause;
+    private ImageView stopMain;
 
     private SongService player;
     boolean serviceBound = false;
 
     public static final String Broadcast_PLAY_NEW_AUDIO = "com.webianks.task.edforastudio.PlayNewAudio";
+    public static final String Broadcast_PAUSE_RESUME_AUDIO = "com.webianks.task.edforastudio.PauseResumeAudio";
+    public static final String Broadcast_STOP_AUDIO = "com.webianks.task.edforastudio.StopAudio";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,13 +114,17 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
         mainSongTitle = (TextView) findViewById(R.id.song_title_main);
         mainArtists = (TextView) findViewById(R.id.artists_main);
         mainPlayPause = (ImageView) findViewById(R.id.play_pause_main);
+        stopMain = (ImageView) findViewById(R.id.stop_main);
+
+        mainPlayPause.setOnClickListener(this);
+        stopMain.setOnClickListener(this);
 
 
         slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
                 //hide upper layout slowly and make main_layout visible
-                bottomPlayer.setAlpha(1-slideOffset);
+                bottomPlayer.setAlpha(1 - slideOffset);
                 mainPlayer.setAlpha(slideOffset);
             }
 
@@ -205,6 +212,8 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
         playPause.setImageResource(R.drawable.ic_pause_circle_filled);
         mainPlayPause.setImageResource(R.drawable.ic_pause_circle_filled_large);
 
+        mainPlayPause.setTag("pause");
+
         songTitle.setText(title);
         bottomArtists.setText(artists);
 
@@ -223,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
                 .centerCrop()
                 .into(mainThumbnail);
 
-      playAudio(url);
+        playAudio(url);
 
     }
 
@@ -240,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
             //Send media with BroadcastReceiver
 
             Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
-            broadcastIntent.putExtra("media",media);
+            broadcastIntent.putExtra("media", media);
             sendBroadcast(broadcastIntent);
         }
     }
@@ -279,4 +288,37 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
         serviceBound = savedInstanceState.getBoolean("ServiceState");
     }
 
+    @Override
+    public void onClick(View view) {
+
+        if (view.getId() == R.id.stop_main) {
+
+            Intent broadcastIntent = new Intent(Broadcast_STOP_AUDIO);
+            sendBroadcast(broadcastIntent);
+
+            mainPlayPause.setImageResource(R.drawable.ic_play_circle_filled_large);
+            mainPlayPause.setTag("play");
+
+        } else if (view.getId() == R.id.play_pause_main) {
+
+            Intent broadcastIntent = new Intent(Broadcast_PAUSE_RESUME_AUDIO);
+            sendBroadcast(broadcastIntent);
+
+            String tag = mainPlayPause.getTag().toString();
+
+            switch (tag) {
+                case "play":
+                    mainPlayPause.setImageResource(R.drawable.ic_pause_circle_filled_large);
+                    mainPlayPause.setTag("pause");
+                    break;
+                case "pause":
+                    mainPlayPause.setImageResource(R.drawable.ic_play_circle_filled_large);
+                    mainPlayPause.setTag("play");
+                    break;
+
+            }
+
+        }
+
+    }
 }
