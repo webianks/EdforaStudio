@@ -12,6 +12,11 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -33,7 +38,9 @@ public class MainActivity extends AppCompatActivity {
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        Toast.makeText(MainActivity.this, "Response is: " + response.toString(), Toast.LENGTH_SHORT).show();
+
+                        //Toast.makeText(MainActivity.this, "Response is: " + response.toString(), Toast.LENGTH_SHORT).show();
+                        parseResponse(response);
 
                     }
                 }, new Response.ErrorListener() {
@@ -44,5 +51,39 @@ public class MainActivity extends AppCompatActivity {
         });
         // Add the request to the RequestQueue.
         queue.add(songsListRequest);
+    }
+
+    private void parseResponse(JSONArray response) {
+
+        List<SongsModel> songsModelList = new ArrayList<>();
+        SongsModel songsModel;
+
+        for (int i = 0; i < response.length(); i++) {
+
+            try {
+
+                JSONObject songObject = response.getJSONObject(i);
+
+                String song_name = songObject.getString("song");
+                String url = songObject.getString("url");
+                String artists = songObject.getString("artists");
+                String cover_image = songObject.getString("cover_image");
+
+                songsModel = new SongsModel();
+                songsModel.setSong(song_name);
+                songsModel.setUrl(url);
+                songsModel.setArtists(artists);
+                songsModel.setCover_image(cover_image);
+
+                songsModelList.add(songsModel);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        Toast.makeText(this, songsModelList.get(0).getArtists(), Toast.LENGTH_SHORT).show();
+
     }
 }
