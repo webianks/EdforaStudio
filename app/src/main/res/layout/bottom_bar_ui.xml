@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bottom_player"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -25,14 +26,12 @@
             android:orientation="vertical">
 
             <TextView
-
                 android:id="@+id/song_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="@dimen/margin_card"
                 android:paddingRight="@dimen/margin_card"
                 android:paddingTop="@dimen/margin_card"
-                android:text="@string/song_name"
                 android:textStyle="bold" />
 
             <TextView
@@ -44,7 +43,7 @@
                 android:paddingBottom="@dimen/margin_two"
                 android:paddingLeft="@dimen/margin_card"
                 android:paddingRight="@dimen/margin_card"
-                android:text="@string/song_artists" />
+                />
 
 
         </LinearLayout>
@@ -68,16 +67,14 @@
     </LinearLayout>
 
     <ProgressBar
-        android:layout_below="@id/song_container"
         android:id="@+id/song_progress"
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="5dp"
-        android:indeterminate="false"
+        android:layout_below="@id/song_container"
         android:layout_marginTop="@dimen/margin_two"
+        android:indeterminate="false"
         android:max="100"
-        android:progress="1"/>
-
-
+        android:progress="1" />
 
 </RelativeLayout>

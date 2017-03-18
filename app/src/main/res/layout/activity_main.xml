@@ -29,7 +29,9 @@
 
     </RelativeLayout>
 
-    <include layout="@layout/bottom_bar_ui" />
+    <include
+        layout="@layout/bottom_bar_ui"
+        />
 
 
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>
