@@ -2,6 +2,10 @@ package com.webianks.task.edforastudio;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -21,13 +25,25 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private RecyclerView recyclerView;
+    private ProgressBar progressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        init();
+
         getListFromTheNetwork();
 
+    }
+
+    private void init() {
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(llm);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
     }
 
     private void getListFromTheNetwork() {
@@ -83,7 +99,13 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        Toast.makeText(this, songsModelList.get(0).getArtists(), Toast.LENGTH_SHORT).show();
+        setSongsList(songsModelList);
 
+    }
+
+    private void setSongsList(List<SongsModel> songsModelList) {
+        SongsAdapter songsAdapter = new SongsAdapter(this, songsModelList);
+        recyclerView.setAdapter(songsAdapter);
+        progressBar.setVisibility(View.GONE);
     }
 }
