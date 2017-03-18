@@ -1,7 +1,12 @@
 package com.webianks.task.edforastudio;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -61,6 +66,12 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
 
     private String TAG = MainActivity.class.getSimpleName();
 
+    private SongService player;
+    boolean serviceBound = false;
+
+    public static final String Broadcast_PLAY_NEW_AUDIO = "com.webianks.task.edforastudio.PlayNewAudio";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +82,25 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
         getListFromTheNetwork();
 
     }
+
+
+    //Binding this Client to the AudioPlayer Service
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            SongService.LocalBinder binder = (SongService.LocalBinder) service;
+            player = binder.getService();
+            serviceBound = true;
+
+            Toast.makeText(MainActivity.this, "Service Bound", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            serviceBound = false;
+        }
+    };
 
     private void init() {
 
@@ -200,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
         this.thumbnail = thumbnail;
         this.url = url;
 
-        if (mMediaPlayer.isPlaying()) {
+      /*  if (mMediaPlayer.isPlaying()) {
             mMediaPlayer.stop();
             mMediaPlayer.reset();
         }
@@ -210,8 +240,49 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
             mMediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
 
+        playPause.setImageResource(R.drawable.ic_pause_circle_filled);
+        mainPlayPause.setImageResource(R.drawable.ic_pause_circle_filled_large);
+
+        songTitle.setText(title);
+        bottomArtists.setText(artists);
+
+        mainSongTitle.setText(title);
+        mainArtists.setText(artists);
+
+        slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+
+        Glide.with(this)
+                .load(thumbnail)
+                .centerCrop()
+                .into(bottomThumbnail);
+
+        Glide.with(this)
+                .load(thumbnail)
+                .centerCrop()
+                .into(mainThumbnail);
+
+      playAudio(url);
+
+    }
+
+
+    private void playAudio(String media) {
+        //Check is service is active
+        if (!serviceBound) {
+            Intent playerIntent = new Intent(this, SongService.class);
+            playerIntent.putExtra("media", media);
+            startService(playerIntent);
+            bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+        } else {
+            //Service is active
+            //Send media with BroadcastReceiver
+
+            Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+            broadcastIntent.putExtra("media",media);
+            sendBroadcast(broadcastIntent);
+        }
     }
 
     private void togglePlayPause() {
@@ -224,26 +295,6 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
         } else {
 
             mMediaPlayer.start();
-            playPause.setImageResource(R.drawable.ic_pause_circle_filled);
-            mainPlayPause.setImageResource(R.drawable.ic_pause_circle_filled_large);
-
-            songTitle.setText(title);
-            bottomArtists.setText(artists);
-
-            mainSongTitle.setText(title);
-            mainArtists.setText(artists);
-
-            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-
-            Glide.with(this)
-                    .load(thumbnail)
-                    .centerCrop()
-                    .into(bottomThumbnail);
-
-            Glide.with(this)
-                    .load(thumbnail)
-                    .centerCrop()
-                    .into(mainThumbnail);
         }
     }
 
@@ -251,12 +302,19 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
     protected void onDestroy() {
         super.onDestroy();
 
+        //remove this portion
         if (mMediaPlayer != null) {
             if (mMediaPlayer.isPlaying()) {
                 mMediaPlayer.stop();
             }
             mMediaPlayer.release();
             mMediaPlayer = null;
+        }
+
+        if (serviceBound) {
+            unbindService(serviceConnection);
+            //service is active
+            player.stopSelf();
         }
     }
 
@@ -270,4 +328,17 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
             super.onBackPressed();
         }
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putBoolean("ServiceState", serviceBound);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        serviceBound = savedInstanceState.getBoolean("ServiceState");
+    }
+
 }

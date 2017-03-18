@@ -144,6 +144,7 @@
             android:orientation="horizontal">
 
             <ImageView
+                android:clickable="true"
                 android:id="@+id/previous"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
@@ -153,6 +154,7 @@
 
 
             <ImageView
+                android:clickable="true"
                 android:id="@+id/play_pause_main"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -160,6 +162,7 @@
                 android:src="@drawable/ic_play_circle_filled_large" />
 
             <ImageView
+                android:clickable="true"
                 android:id="@+id/stop_main"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
@@ -169,12 +172,14 @@
 
 
             <ImageView
+                android:clickable="true"
                 android:id="@+id/forward"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginRight="@dimen/margin_card"
-                android:layout_marginTop="@dimen/margin_card_double"
-                android:src="@drawable/ic_forward_filled_large" />
+                android:layout_marginLeft="@dimen/margin_card"
+                android:layout_marginTop="28dp"
+                android:src="@drawable/ic_skip_next" />
 
 
         </LinearLayout>
