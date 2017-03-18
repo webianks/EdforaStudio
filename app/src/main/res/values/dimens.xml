@@ -2,4 +2,6 @@
 <resources>
     <dimen name="margin_card">16dp</dimen>
     <dimen name="margin_two">2dp</dimen>
+    <dimen name="margin_card_double">32dp</dimen>
+    <dimen name="margin_card_half">8dp</dimen>
 </resources>
