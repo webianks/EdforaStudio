@@ -58,6 +58,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.VH> {
         ImageView thumbnail;
         TextView song;
         TextView artists;
+        ImageView download;
 
 
         public VH(View itemView) {
@@ -66,13 +67,22 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.VH> {
             thumbnail = (ImageView) itemView.findViewById(R.id.thumbnail);
             song = (TextView) itemView.findViewById(R.id.song_title);
             artists = (TextView) itemView.findViewById(R.id.artists);
+            download = (ImageView) itemView.findViewById(R.id.download);
+
             itemView.setOnClickListener(this);
+            download.setOnClickListener(this);
 
         }
 
         @Override
         public void onClick(View view) {
             if (clickListener != null) {
+
+
+                if (view.getId() == R.id.download){
+                    clickListener.downloadClicked(songsModelList.get(getAdapterPosition()).getUrl());
+                    return;
+                }
 
                 String title = songsModelList.get(getAdapterPosition()).getSong();
                 String artists = songsModelList.get(getAdapterPosition()).getArtists();
@@ -90,5 +100,6 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.VH> {
 
     public interface ClickListener {
         void itemClicked(String title, String artists, String url,String thumbnail);
+        void downloadClicked(String url);
     }
 }

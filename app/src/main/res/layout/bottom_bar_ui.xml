@@ -61,7 +61,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/margin_card"
-                    android:src="@drawable/ic_play_circle_filled" />
+                    android:clickable="true"
+                    android:src="@drawable/ic_play_circle_filled"
+                    android:tag="play" />
 
 
             </LinearLayout>
@@ -142,42 +144,42 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:clickable="true"
                 android:id="@+id/previous"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_marginRight="@dimen/margin_card"
                 android:layout_marginTop="@dimen/margin_card_double"
+                android:clickable="true"
                 android:src="@drawable/ic_previous_filled_large" />
 
 
             <ImageView
-                android:clickable="true"
                 android:id="@+id/play_pause_main"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin_card"
-                android:tag="play"
-                android:src="@drawable/ic_play_circle_filled_large" />
+                android:clickable="true"
+                android:src="@drawable/ic_play_circle_filled_large"
+                android:tag="play" />
 
             <ImageView
-                android:clickable="true"
                 android:id="@+id/stop_main"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_marginRight="@dimen/margin_card"
                 android:layout_marginTop="@dimen/margin_card_double"
+                android:clickable="true"
                 android:src="@drawable/ic_stop_filled_large" />
 
 
             <ImageView
-                android:clickable="true"
                 android:id="@+id/forward"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/margin_card"
                 android:layout_marginLeft="@dimen/margin_card"
+                android:layout_marginRight="@dimen/margin_card"
                 android:layout_marginTop="28dp"
+                android:clickable="true"
                 android:src="@drawable/ic_skip_next" />
 
 

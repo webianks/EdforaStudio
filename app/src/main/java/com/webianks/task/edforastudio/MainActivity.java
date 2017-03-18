@@ -1,9 +1,14 @@
 package com.webianks.task.edforastudio;
 
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -41,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
     private RelativeLayout bottomPlayer;
     private RelativeLayout mainPlayer;
 
+    private long enqueue;
+    private DownloadManager dm;
     //bottom_bar ui elements
 
     private ImageView bottomThumbnail;
@@ -70,6 +77,9 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
         init();
 
         getListFromTheNetwork();
+
+        registerReceiver(downloadReceiver, new IntentFilter(
+                DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 
     }
 
@@ -236,6 +246,13 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
 
     }
 
+    @Override
+    public void downloadClicked(String url) {
+        dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+        enqueue = dm.enqueue(request);
+    }
+
 
     private void playAudio(String media) {
         //Check is service is active
@@ -263,6 +280,8 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
             //service is active
             player.stopSelf();
         }
+
+        unregisterReceiver(downloadReceiver);
     }
 
     @Override
@@ -319,6 +338,19 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
             }
 
         }
-
     }
+
+    BroadcastReceiver downloadReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
+
+                Toast.makeText(context, "Download complete.", Toast.LENGTH_LONG).show();
+            }
+        }
+    };
+
+
+
 }
