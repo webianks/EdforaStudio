@@ -2,12 +2,12 @@ package com.webianks.task.edforastudio;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -21,6 +21,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.VH> {
 
     private Context context;
     private List<SongsModel> songsModelList;
+    private String TAG = SongsAdapter.class.getSimpleName();
 
     public SongsAdapter(Context context, List<SongsModel> songsModelList) {
         this.context = context;
@@ -41,7 +42,10 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.VH> {
         holder.song.setText(songsModelList.get(position).getSong());
         holder.artists.setText(songsModelList.get(position).getArtists());
 
-        Glide.with(context).load(songsModelList.get(position).getUrl()).into(holder.thumbnail);
+        Glide.with(context)
+                .load(songsModelList.get(position).getCover_image())
+                .centerCrop()
+                .into(holder.thumbnail);
 
     }
 
