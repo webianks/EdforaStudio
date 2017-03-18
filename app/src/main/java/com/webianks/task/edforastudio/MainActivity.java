@@ -6,9 +6,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
     private ProgressBar progressBar;
     private MediaPlayer mMediaPlayer;
     private SlidingUpPanelLayout slidingUpPanelLayout;
+    private RelativeLayout bottomPlayer;
+    private RelativeLayout mainPlayer;
 
     //bottom_bar ui elements
 
@@ -50,6 +54,13 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
     private String url;
     private String thumbnail;
 
+    //main_player_ui_elements
+    private ImageView mainThumbnail;
+    private TextView mainSongTitle;
+    private TextView mainArtists;
+    private ImageView mainPlayPause;
+
+    private String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,11 +92,39 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
             }
         });
 
+        bottomPlayer = (RelativeLayout) findViewById(R.id.bottom_player);
+        mainPlayer = (RelativeLayout) findViewById(R.id.main_player);
+
         bottomThumbnail = (ImageView) findViewById(R.id.thumbnail);
         songTitle = (TextView) findViewById(R.id.song_title);
         bottomArtists = (TextView) findViewById(R.id.artists);
         playPause = (ImageView) findViewById(R.id.play_pause);
 
+        mainThumbnail = (ImageView) findViewById(R.id.main_cover);
+        mainSongTitle = (TextView) findViewById(R.id.song_title_main);
+        mainArtists = (TextView) findViewById(R.id.artists_main);
+        //playPause = (ImageView) findViewById(R.id.play_pause);
+
+
+        slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+                //hide upper layout slowly and make main_layout visible
+                bottomPlayer.setAlpha(1-slideOffset);
+                mainPlayer.setAlpha(slideOffset);
+            }
+
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+
+            }
+        });
+        slidingUpPanelLayout.setFadeOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+            }
+        });
 
     }
 
@@ -191,6 +230,9 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
             songTitle.setText(title);
             bottomArtists.setText(artists);
 
+            mainSongTitle.setText(title);
+            mainArtists.setText(artists);
+
             slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
 
             Glide.with(this)
@@ -198,6 +240,10 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
                     .centerCrop()
                     .into(bottomThumbnail);
 
+            Glide.with(this)
+                    .load(thumbnail)
+                    .centerCrop()
+                    .into(mainThumbnail);
         }
     }
 
