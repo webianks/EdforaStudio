@@ -4,8 +4,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -31,7 +29,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +37,6 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
 
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
-    private MediaPlayer mMediaPlayer;
     private SlidingUpPanelLayout slidingUpPanelLayout;
     private RelativeLayout bottomPlayer;
     private RelativeLayout mainPlayer;
@@ -52,25 +48,16 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
     private TextView bottomArtists;
     private ImageView playPause;
 
-    //all bottom values
-    private String title;
-    private String artists;
-    private String url;
-    private String thumbnail;
-
     //main_player_ui_elements
     private ImageView mainThumbnail;
     private TextView mainSongTitle;
     private TextView mainArtists;
     private ImageView mainPlayPause;
 
-    private String TAG = MainActivity.class.getSimpleName();
-
     private SongService player;
     boolean serviceBound = false;
 
     public static final String Broadcast_PLAY_NEW_AUDIO = "com.webianks.task.edforastudio.PlayNewAudio";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
             player = binder.getService();
             serviceBound = true;
 
-            Toast.makeText(MainActivity.this, "Service Bound", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(MainActivity.this, "Service Bound", Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -111,15 +98,6 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
         slidingUpPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
         slidingUpPanelLayout.setEnabled(true);
         slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-
-        mMediaPlayer = new MediaPlayer();
-        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                togglePlayPause();
-            }
-        });
 
         bottomPlayer = (RelativeLayout) findViewById(R.id.bottom_player);
         mainPlayer = (RelativeLayout) findViewById(R.id.main_player);
@@ -224,24 +202,6 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
     @Override
     public void itemClicked(String title, String artists, String url, String thumbnail) {
 
-
-        this.title = title;
-        this.artists = artists;
-        this.thumbnail = thumbnail;
-        this.url = url;
-
-      /*  if (mMediaPlayer.isPlaying()) {
-            mMediaPlayer.stop();
-            mMediaPlayer.reset();
-        }
-
-        try {
-            mMediaPlayer.setDataSource(url);
-            mMediaPlayer.prepareAsync();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-
         playPause.setImageResource(R.drawable.ic_pause_circle_filled);
         mainPlayPause.setImageResource(R.drawable.ic_pause_circle_filled_large);
 
@@ -285,31 +245,9 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
         }
     }
 
-    private void togglePlayPause() {
-
-        if (mMediaPlayer.isPlaying()) {
-
-            mMediaPlayer.pause();
-            playPause.setImageResource(R.drawable.ic_play_circle_filled);
-
-        } else {
-
-            mMediaPlayer.start();
-        }
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        //remove this portion
-        if (mMediaPlayer != null) {
-            if (mMediaPlayer.isPlaying()) {
-                mMediaPlayer.stop();
-            }
-            mMediaPlayer.release();
-            mMediaPlayer = null;
-        }
 
         if (serviceBound) {
             unbindService(serviceConnection);
