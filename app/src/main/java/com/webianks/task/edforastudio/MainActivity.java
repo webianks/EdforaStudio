@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -103,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
         mainThumbnail = (ImageView) findViewById(R.id.main_cover);
         mainSongTitle = (TextView) findViewById(R.id.song_title_main);
         mainArtists = (TextView) findViewById(R.id.artists_main);
-        //playPause = (ImageView) findViewById(R.id.play_pause);
+        mainPlayPause = (ImageView) findViewById(R.id.play_pause_main);
 
 
         slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
@@ -226,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
 
             mMediaPlayer.start();
             playPause.setImageResource(R.drawable.ic_pause_circle_filled);
+            mainPlayPause.setImageResource(R.drawable.ic_pause_circle_filled_large);
 
             songTitle.setText(title);
             bottomArtists.setText(artists);

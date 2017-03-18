@@ -84,8 +84,7 @@
     <RelativeLayout
         android:id="@+id/main_player"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:id="@+id/titleContainer"
@@ -122,6 +121,63 @@
             android:layout_height="250dp"
             android:layout_below="@id/titleContainer"
             android:background="@color/cardview_dark_background" />
+
+        <ProgressBar
+            android:id="@+id/main_progress"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_below="@id/main_cover"
+            android:layout_marginLeft="@dimen/margin_card"
+            android:layout_marginRight="@dimen/margin_card"
+            android:layout_marginTop="@dimen/margin_card"
+            android:indeterminate="false"
+            android:max="100"
+            android:progress="1" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/main_progress"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="@dimen/margin_card"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/previous"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginRight="@dimen/margin_card"
+                android:layout_marginTop="@dimen/margin_card_double"
+                android:src="@drawable/ic_previous_filled_large" />
+
+
+            <ImageView
+                android:id="@+id/play_pause_main"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_card"
+                android:src="@drawable/ic_play_circle_filled_large" />
+
+            <ImageView
+                android:id="@+id/stop_main"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginRight="@dimen/margin_card"
+                android:layout_marginTop="@dimen/margin_card_double"
+                android:src="@drawable/ic_stop_filled_large" />
+
+
+            <ImageView
+                android:id="@+id/forward"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginRight="@dimen/margin_card"
+                android:layout_marginTop="@dimen/margin_card_double"
+                android:src="@drawable/ic_forward_filled_large" />
+
+
+        </LinearLayout>
 
 
     </RelativeLayout>
