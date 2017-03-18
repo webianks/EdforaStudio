@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
@@ -345,7 +344,6 @@ public class MainActivity extends AppCompatActivity implements SongsAdapter.Clic
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
-
                 Toast.makeText(context, "Download complete.", Toast.LENGTH_LONG).show();
             }
         }

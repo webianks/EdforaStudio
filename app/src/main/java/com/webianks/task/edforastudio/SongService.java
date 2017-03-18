@@ -35,6 +35,8 @@ public class SongService extends Service implements MediaPlayer.OnCompletionList
 
     // Binder given to clients
     private final IBinder iBinder = new LocalBinder();
+    private int finalTime;
+    private int startTime;
 
 
     @Override
@@ -142,6 +144,11 @@ public class SongService extends Service implements MediaPlayer.OnCompletionList
     public void onPrepared(MediaPlayer mp) {
         //Invoked when the media source is ready for playback.
         playMedia();
+
+        finalTime = mediaPlayer.getDuration();
+        startTime = mediaPlayer.getCurrentPosition();
+
+        Log.d(SongService.class.getSimpleName(), "onPrepared: "+finalTime+" "+startTime);
     }
 
     @Override
@@ -298,10 +305,10 @@ public class SongService extends Service implements MediaPlayer.OnCompletionList
     }
 
 
-    public static void publishResult(Context context, int percentage){
+    public static void publishTotalLength(Context context, long finalTime){
         Intent intent = new Intent("Broadcast");
         intent.putExtra("INTENT_TYPE", "SEEKBAR_RESULT");
-        intent.putExtra("PERCENTAGE", 10);
+        intent.putExtra("TOTAL_LENGTH", finalTime);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 }
